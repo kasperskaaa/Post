@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5444/post_db
+    username: postgres
+    password: root
+
+  flyway:
+    locations: classpath:db.migration
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+server:
+  port: 8080

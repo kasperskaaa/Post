@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="img/favicon_home.ico">
+    <link rel="shortcut icon" href="#">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .custom-background {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container-box {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container-box:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="http://localhost:9091/">Post</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="http://localhost:9091/departments/">Departments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/employees/">Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/users/">Users</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="http://localhost:9091/orders/">Order List</a>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/search.html">Search Order</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/create.html">Register Order</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container custom-background mx-auto my-4">
+    <h2 class="mb-4">Search Order by ID</h2>
+    <div id="message-container" class="alert" style="display: none;"></div>
+    <div class="form-group">
+        <label for="orderSId">Order ID:</label>
+        <input type="text" class="form-control" id="orderSId" name="orderId">
+    </div>
+    <button type="button" class="btn btn-dark" onclick="redirectToOrderURL()">Search Order</button>
+</div>
+
+<div class="container custom-background mx-auto my-4">
+    <h2 class="mb-4">Home Page</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="container-box" onclick="redirectToURL('http://localhost:9091/users/')">
+                <img src="img/users.png" alt="Users">
+                <p>Users</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="container-box" onclick="redirectToURL('http://localhost:9091/departments/')">
+                <img src="img/departments.png" alt="Departments">
+                <p>Departments</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="container-box" onclick="redirectToURL('http://localhost:9091/employees/')">
+                <img src="img/employees.png" alt="Employees">
+                <p>Employees</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="container-box" onclick="redirectToURL('http://localhost:9091/orders/')">
+                <img src="img/orders.png" alt="Orders">
+                <p>Orders</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+    function redirectToOrderURL() {
+        const orderId = document.getElementById('orderSId').value;
+        if (orderId) {
+            const url = `http://localhost:9091/orders/show.html?id=${orderId}`;
+            window.location.href = url;
+        } else {
+            alert('Please enter an Order ID before searching.');
+        }
+    }
+
+
+    function redirectToURL(url) {
+        window.location.href = url;
+    }
+
+</script>
+
+</body>
+</html>

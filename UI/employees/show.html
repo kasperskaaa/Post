@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="../img/favicon_employees.ico">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .custom-background {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="http://localhost:9091/">Post</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="http://localhost:9091/departments/">Departments</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="http://localhost:9091/employees/">Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/users/">Users</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="http://localhost:9091/orders/">Order List</a>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/search.html">Search Order</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/create.html">Register Order</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container custom-background mx-auto my-4">
+    <h2 class="mb-4">Employee Profile</h2>
+    <div id="message-container" class="alert" style="display: none;"></div>
+
+    <div class="user-info">
+        <div class="row">
+            <div class="col">
+                <strong>ID:</strong>
+                <p id="userId"></p>
+            </div>
+            <div class="col">
+                <strong>Name:</strong>
+                <p id="userName"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Email:</strong>
+                <p id="userEmail"></p>
+            </div>
+            <div class="col">
+                <strong>Surname:</strong>
+                <p id="userSurname"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Phone:</strong>
+                <p id="userPhone"></p>
+            </div>
+            <div class="col">
+                <strong>Patronymic:</strong>
+                <p id="userPatronymic"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Experience:</strong>
+                <p id="userExperience"></p>
+            </div>
+            <div class="col">
+                <strong>Hired:</strong>
+                <p id="userHired"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Fired:</strong>
+                <p id="userFired"></p>
+            </div>
+            <div class="col">
+                <strong>Work Department:</strong>
+                <p>
+                    <a href="http://localhost:9091/departments/" id="userWorkDepartment"></a>
+                </p>
+            </div>
+        </div>
+        <button onclick="onBack()" class="btn btn-dark">Back</button>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+    function onBack() {
+        window.history.back();
+    }
+
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const employeeId = urlParams.get('id');
+
+        function fetchEmployeeData() {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8080/employees/${employeeId}`,
+                dataType: 'json',
+                success: function (employeeData) {
+                    const email = employeeData.email ? employeeData.email : '';
+                    const fired = employeeData.fired ? employeeData.fired : 'Not Fired';
+                    $('#userId').text(employeeData.id);
+                    $('#userEmail').text(email);
+                    $('#userName').text(employeeData.name);
+                    $('#userSurname').text(employeeData.surname);
+                    $('#userPatronymic').text(employeeData.patronymic);
+                    $('#userPhone').text(employeeData.phone);
+                    $('#userExperience').text(employeeData.experience);
+                    $('#userHired').text(employeeData.hired);
+                    $('#userFired').text(fired);
+                    $('#userWorkDepartment').text(employeeData.work_department.id);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch user data:', error);
+                }
+            });
+        }
+
+        fetchEmployeeData();
+    });
+
+</script>
+
+</body>
+</html>

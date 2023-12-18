@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="../img/favicon_users.ico">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .custom-background {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="http://localhost:9091/">Post</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="http://localhost:9091/departments/">Departments</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="http://localhost:9091/employees/">Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/users/">Users</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="http://localhost:9091/orders/">Order List</a>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/search.html">Search Order</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/create.html">Register Order</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container custom-background mx-auto my-4">
+    <h2 class="mb-4">User Profile</h2>
+    <div id="message-container" class="alert" style="display: none;"></div>
+
+    <!-- User Information Section -->
+    <div class="user-info">
+        <div class="row">
+            <div class="col">
+                <strong>ID:</strong>
+                <p id="userId"></p>
+            </div>
+            <div class="col">
+                <strong>Name:</strong>
+                <p id="userName"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Email:</strong>
+                <p id="userEmail"></p>
+            </div>
+            <div class="col">
+                <strong>Surname:</strong>
+                <p id="userSurname"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <strong>Phone:</strong>
+                <p id="userPhone"></p>
+            </div>
+            <div class="col">
+                <strong>Patronymic:</strong>
+                <p id="userPatronymic"></p>
+            </div>
+        </div>
+        <button id="sentOrdersButton" class="btn btn-dark">Check sent orders</button>
+        <button onclick="onBack()" class="btn btn-dark">Back</button>
+    </div>
+
+
+    <!-- Orders Table -->
+    <div class="orders" style="margin-top: 3%">
+        <h3>Orders</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Title</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+
+        function fetchUserData() {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8080/users/${userId}`,
+                dataType: 'json',
+                success: function (userData) {
+                    console.log(userData)
+                    $('#userId').text(userData.id);
+                    $('#userEmail').text(userData.email);
+                    $('#userName').text(userData.name);
+                    $('#userSurname').text(userData.surname);
+                    $('#userPatronymic').text(userData.patronymic);
+                    $('#userPhone').text(userData.phone);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch user data:', error);
+                }
+            });
+        }
+
+        function fetchOrdersByRecipient() {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8080/orders/by_recipient/${userId}`,
+                dataType: 'json',
+                success: function (orders) {
+                    const userOrders = $('.orders tbody');
+                    userOrders.empty();
+
+                    orders.forEach(function (order) {
+                        const orderRow = `<tr>
+                            <td>${order.id}</td>
+                            <td>${order.title}</td>
+                            <td>${order.total_price}</td>
+                            <td>${order.status}</td>
+                            <td>
+                            <button class="btn btn-danger cancel-order" data-order-id="${order.id}">Cancel</button>
+                            <button class="btn btn-info show-order" data-order-id="${order.id}">Show</button>
+                            </td>
+                        </tr>`;
+                        userOrders.append(orderRow);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch user orders:', error);
+                }
+            });
+        }
+
+        fetchUserData();
+        fetchOrdersByRecipient();
+
+        $('.orders').on('click', '.cancel-order', function () {
+            const orderId = $(this).data('order-id');
+
+            if (confirm(`Are you sure you want to cancel the order with ID ${orderId}?`)) {
+                $.ajax({
+                    type: 'PATCH',
+                    url: `http://localhost:8080/orders/${orderId}/cancelled`,
+                    success: function () {
+                        alert(`The order with ID ${orderId} has been successfully cancelled.`);
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to cancel order:', error);
+                    }
+                });
+            }
+        });
+
+        $('.orders').on('click', '.show-order', function () {
+            const orderId = $(this).data('order-id');
+            window.location.href = `http://localhost:9091/orders/show.html?id=${orderId}`;
+        });
+    });
+
+    function onBack() {
+        window.history.back();
+    }
+
+    $('#sentOrdersButton').click(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+
+        window.location.href = `http://localhost:9091/users/sent_orders.html?id=${userId}`;
+    });
+
+
+</script>
+
+
+
+</body>
+</html>

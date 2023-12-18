@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="../img/favicon-orders.ico">
+    <link rel="shortcut icon" href="#">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="http://localhost:9091/">Post</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="http://localhost:9091/departments/">Departments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/employees/">Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:9091/users/">Users</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="http://localhost:9091/orders/">Order List</a>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/search.html">Search Order</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="http://localhost:9091/orders/create.html">Register Order</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mx-auto my-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-4">Order List</h2>
+        <a href="http://localhost:9091/orders/create.html" class="btn btn-dark">Register Order</a>
+    </div>
+    <div class="table-responsive">
+        <table class="orders table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Title</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: `http://localhost:8080/orders`,
+            dataType: 'json',
+            success: function (orders) {
+                const allOrders = $('.orders tbody');
+                allOrders.empty();
+
+                orders.forEach(function (order) {
+                    const orderRow = `<tr>
+                            <td>${order.id}</td>
+                            <td>${order.title}</td>
+                            <td>${order.total_price}</td>
+                            <td>${order.status}</td>
+                            <td>
+                            <a class="btn btn-info show-order" href="show.html?id=${order.id}">Show</a>
+                            </td>
+                        </tr>`;
+                    allOrders.append(orderRow);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to fetch user orders:', error);
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

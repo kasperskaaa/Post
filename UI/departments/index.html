@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departments</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="shortcut icon" href="../img/favicon_departments.ico">
+  <link rel="shortcut icon" href="#">
+  <style>
+    body {
+      background-color: #f0f0f0;
+    }
+
+    .custom-background {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="http://localhost:9091/">Post</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="http://localhost:9091/departments/">Departments</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://localhost:9091/employees/">Employees</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://localhost:9091/users/">Users</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="http://localhost:9091/orders/">Order List</a>
+            <a class="dropdown-item" href="http://localhost:9091/orders/search.html">Search Order</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="http://localhost:9091/orders/create.html">Register Order</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container custom-background mx-auto my-4">
+  <h2 class="mb-4">Add New Department</h2>
+  <div id="message-container" class="alert" style="display: none;"></div>
+  <form>
+    <div class="form-group">
+      <label for="title">Title:</label>
+      <input type="text" class="form-control" id="title" name="title">
+    </div>
+    <div class="form-group">
+      <label for="address">Address:</label>
+      <input type="text" class="form-control" id="address" name="address">
+    </div>
+    <button type="submit" class="btn btn-dark">Add Department</button>
+    <button onclick="onBack()" class="btn btn-dark">Back</button>
+  </form>
+</div>
+
+<div class="container custom-background mx-auto my-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="mb-4">Department List</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Address</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody id="department-list">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('form').submit(function (e) {
+      e.preventDefault();
+
+      const title = $('#title').val() || null;
+      const address = $('#address').val() || null;
+
+      const data = {
+        title: title,
+        address: address,
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:8080/departments',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'text',
+        success: function () {
+          displayMessage('Success', 'alert-success');
+          $('form')[0].reset();
+          location.reload();
+        },
+        error: function (xhr) {
+          const errorMessage = JSON.parse(xhr.responseText).message;
+          displayMessage(`Error: ${errorMessage}`, 'alert-danger');
+        }
+      });
+    });
+
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/departments',
+      dataType: 'json',
+      success: function (data) {
+        console.log(data);
+        const userList = $('#department-list');
+        userList.empty();
+
+        data.forEach(function (department) {
+          userList.append(
+                  `<tr>
+                            <td>${department.id}</td>
+                            <td>${department.title}</td>
+                            <td>${department.address}</td>
+                            <td>
+                            <button class="btn btn-danger btn-sm delete-button" data-id="${department.id}">Close</button>
+                            </td>
+                        </tr>`
+          );
+        });
+      },
+      error: function (xhr, status, error) {
+        console.error('Failed to fetch department data:', error);
+      }
+    });
+  });
+
+  $('#department-list').on('click', '.delete-button', function () {
+    const departmentId = $(this).data('id');
+    if (confirm(`Are you sure you want to remove a department from the ID ${departmentId}?`)) {
+      $.ajax({
+        type: 'DELETE',
+        url: `http://localhost:8080/departments/${departmentId}`,
+        success: function () {
+          alert(`The departments with ID ${departmentId} has been successfully deleted.`);
+          location.reload();
+        },
+        error: function (xhr, status, error) {
+          console.error('Failed to delete department:', error);
+        }
+      });
+    }
+  });
+
+  function displayMessage(message, alertClass) {
+    const messageContainer = $('#message-container');
+    messageContainer.text(message);
+    messageContainer.removeClass('alert-success alert-danger').addClass(alertClass);
+    messageContainer.show();
+  }
+
+  function onBack() {
+    window.history.back();
+  }
+
+  window.onload = function () {
+    var inputs = document.querySelectorAll('input');
+
+    inputs.forEach(function (input) {
+      input.value = '';
+    });
+  };
+
+</script>
+
+</body>
+</html>
